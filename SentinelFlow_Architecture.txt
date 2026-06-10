@@ -1,0 +1,21 @@
+Frontend (React)
+      ↓
+API Gateway (or public endpoint)
+      ↓
+FastAPI Backend (EC2 or Container)
+      ↓
+ML Inference Service
+      ↓
+PostgreSQL (RDS)
+      ↓
+S3 (data + model storage)
+      ↓
+Dashboard + Alerts
+
+🎯 What you are building (final outcome)
+A system that:
+receives transactions
+runs ML fraud detection
+stores results in database
+shows live dashboard
+runs in the cloud (AWS or Azure)
