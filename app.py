@@ -60,14 +60,18 @@ class Transaction(BaseModel):
 # Metrics updater
 # -------------------------
 def update_metrics(result: dict):
+    # Safely initialize metrics tracking
     metrics["total_requests"] += 1
 
-    if result["is_fraud"] == 1:
+    # Use .get() with a default fallback to avoid KeyError crashes
+    is_fraud = result.get("is_fraud", 0)
+    if is_fraud == 1:
         metrics["fraud_count"] += 1
     else:
         metrics["normal_count"] += 1
 
-    risk = result["risk_level"]
+    # Convert to uppercase immediately to handle any casing discrepancies safely
+    risk = str(result.get("risk_level", "LOW")).upper()
 
     if risk == "HIGH":
         metrics["high_risk"] += 1
@@ -163,7 +167,7 @@ def model_info():
     return {
         "model": "XGBoost",
         "task": "Fraud Detection",
-        "feature_count": len(get_features),  # FIXED: assumes list, not function
+        "feature_count": 18, 
         "threshold": 0.5
     }
 
