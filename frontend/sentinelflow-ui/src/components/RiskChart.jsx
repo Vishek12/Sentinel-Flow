@@ -4,7 +4,6 @@ import { PieChart, Pie, Cell, Tooltip } from "recharts";
 
 const COLORS = ["#22c55e", "#f59e0b", "#ef4444"];
 
-// Destructure the refreshTrigger prop from the parent
 export default function RiskChart({ refreshTrigger }) {
   const [data, setData] = useState([]);
 
@@ -15,45 +14,68 @@ export default function RiskChart({ refreshTrigger }) {
         
         const counts = { LOW: 0, MEDIUM: 0, HIGH: 0 };
         
-        // Guard checking just in case data isn't loaded or formatted correctly yet
         if (res.data && Array.isArray(res.data)) {
           res.data.forEach((d) => {
-            // Normalize case in case your backend passes "High" or "HIGH"
-            const level = (d.risk_level || "LOW").toUpperCase();
-            if (counts[level] !== undefined) {
-              counts[level]++;
+            // Robust normalization: looks for risk_level or falls back to standard low
+            const rawLevel = d.risk_level || d.risk_score || "LOW";
+            const level = String(rawLevel).toUpperCase();
+            
+            if (level.includes("HIGH")) {
+              counts.HIGH++;
+            } else if (level.includes("MED") || level.includes("WARN")) {
+              counts.MEDIUM++;
+            } else {
+              counts.LOW++;
             }
           });
         }
 
-        setData([
+        // Map data arrays and filter out categories with 0 entries to keep layout crisp
+        const formattedData = [
           { name: "LOW", value: counts.LOW },
           { name: "MEDIUM", value: counts.MEDIUM },
           { name: "HIGH", value: counts.HIGH }
-        ]);
+        ].filter(item => item.value > 0);
+
+        setData(formattedData);
       } catch (err) {
         console.error("Failed to update Risk Chart telemetry data:", err);
       }
     };
 
     fetchData();
-  // 2. ✨ Track the parent trigger so the charts redraw automatically
   }, [refreshTrigger]); 
 
   return (
     <div className="section" style={{ width: "100%", boxSizing: "border-box" }}>
-      <h3 style={{ textAlign: "center" }}>Risk Distribution</h3>
+      <h3 style={{ textAlign: "center", marginBottom: "1rem" }}>Risk Distribution</h3>
 
-      {/* ✨ 3. Flexbox container wrapper to center align your chart canvas */}
-      <div style={{ display: "flex", justifyContent: "center", alignItems: "center", width: "100%" }}>
-        <PieChart width={400} height={300}>
-          <Pie data={data} dataKey="value" label cx="50%" cy="50%" outerRadius={100}>
-            {data.map((_, i) => (
-              <Cell key={i} fill={COLORS[i]} />
-            ))}
-          </Pie>
-          <Tooltip />
-        </PieChart>
+      {/* Complete Flexbox centering alignment container */}
+      <div style={{ display: "flex", justifyContent: "center", alignItems: "center", width: "100%", minHeight: "300px" }}>
+        {data.length === 0 ? (
+          <p style={{ color: "#64748b", fontSize: "0.9rem" }}>No threat data logged yet</p>
+        ) : (
+          <PieChart width={400} height={300}>
+            <Pie 
+              data={data} 
+              dataKey="value" 
+              nameKey="name"
+              label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
+              cx="50%" 
+              cy="50%" 
+              outerRadius={90}
+            >
+              {data.map((entry, i) => {
+                // Keep color index matched with color array positions even when filtered
+                let color = COLORS[0]; // Default low green
+                if (entry.name === "MEDIUM") color = COLORS[1];
+                if (entry.name === "HIGH") color = COLORS[2];
+                return <Cell key={`cell-${i}`} fill={color} />;
+              })}
+            </Pie>
+            <Tooltip formatter={(value) => [`${value} Transactions`, "Count"]} />
+          </PieChart>
+        )}
       </div>
     </div>
   );
