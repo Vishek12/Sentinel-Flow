@@ -142,13 +142,13 @@ export default function PredictForm({ onPredictionComplete }){
           <input type="number" name="failed_login_attempts" value={formData.failed_login_attempts} onChange={handleChange} required style={{ width: "100%", padding: "0.5rem", borderRadius: "4px", border: "1px solid #cbd5e0" }} />
         </div>
         
-        <div style={{ gridColumn: "span 2", display: "flex", gap: "1.5rem", flexWrap: "wrap", background: "#fff", padding: "0.5rem 0" }}>
-          <label style={{ display: "flex", alignItems: "center", gap: "0.5rem", cursor: "pointer" }}><input type="checkbox" name="is_international" checked={formData.is_international} onChange={handleChange} /> Cross-border Payload</label>
-          <label style={{ display: "flex", alignItems: "center", gap: "0.5rem", cursor: "pointer" }}><input type="checkbox" name="new_device" checked={formData.new_device} onChange={handleChange} /> Unrecognized Device Flag</label>
-          <label style={{ display: "flex", alignItems: "center", gap: "0.5rem", cursor: "pointer" }}><input type="checkbox" name="vpn_detected" checked={formData.vpn_detected} onChange={handleChange} /> Active Proxy/VPN Tunnel</label>
-          <label style={{ display: "flex", alignItems: "center", gap: "0.5rem", cursor: "pointer" }}><input type="checkbox" name="email_verified" checked={formData.email_verified} onChange={handleChange} /> Email Cleared</label>
-          <label style={{ display: "flex", alignItems: "center", gap: "0.5rem", cursor: "pointer" }}><input type="checkbox" name="phone_verified" checked={formData.phone_verified} onChange={handleChange} /> MFA Phone Enrolled</label>
-          <label style={{ display: "flex", alignItems: "center", gap: "0.5rem", cursor: "pointer" }}><input type="checkbox" name="two_factor_enabled" checked={formData.two_factor_enabled} onChange={handleChange} /> Secure 2FA Hardened</label>
+        <div style={{ gridColumn: "span 2", display: "flex", gap: "1.5rem", flexWrap: "wrap", background: "rgba(0, 0, 0, 0.2)", padding: "1rem", borderRadius: "8px" }}>
+        <label style={{ display: "flex", alignItems: "center", gap: "0.5rem", cursor: "pointer" }}><input type="checkbox" name="is_international" checked={formData.is_international} onChange={handleChange} /> Cross-border Payload</label>
+        <label style={{ display: "flex", alignItems: "center", gap: "0.5rem", cursor: "pointer" }}><input type="checkbox" name="new_device" checked={formData.new_device} onChange={handleChange} /> Unrecognized Device Flag</label>
+        <label style={{ display: "flex", alignItems: "center", gap: "0.5rem", cursor: "pointer" }}><input type="checkbox" name="vpn_detected" checked={formData.vpn_detected} onChange={handleChange} /> Active Proxy/VPN Tunnel</label>
+        <label style={{ display: "flex", alignItems: "center", gap: "0.5rem", cursor: "pointer" }}><input type="checkbox" name="email_verified" checked={formData.email_verified} onChange={handleChange} /> Email Cleared</label>
+        <label style={{ display: "flex", alignItems: "center", gap: "0.5rem", cursor: "pointer" }}><input type="checkbox" name="phone_verified" checked={formData.phone_verified} onChange={handleChange} /> MFA Phone Enrolled</label>
+        <label style={{ display: "flex", alignItems: "center", gap: "0.5rem", cursor: "pointer" }}><input type="checkbox" name="two_factor_enabled" checked={formData.two_factor_enabled} onChange={handleChange} /> Secure 2FA Hardened</label>
         </div>
 
         <button type="submit" style={{ gridColumn: "span 2", padding: "1rem", background: "#3182ce", color: "#fff", border: "none", borderRadius: "6px", fontWeight: "bold", cursor: "pointer", transition: "background 0.2s", marginTop: "1rem" }} disabled={loading}>
