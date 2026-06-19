@@ -8,10 +8,10 @@ This project is currently **under active development**, with ongoing improvement
 
 ## Tech Stack
 - **Programming Language:** Python  
-- **Data Processing:** Pandas, NumPy  
-- **Machine Learning:** Scikit-learn, XGBoost  
+- **Data Processing:** Pandas, NumPy
+- **Machine Learning:** Scikit-learn, XGBoost
 - **Model Serialization:** Joblib / Pickle  
-- **Data Storage (if applicable):** AWS S3  
+- **Data Storage (if applicable):** AWS S3, AWS RDBS, Docker 
 - **Development Tools:** Jupyter Notebook, VS Code  
 - **Version Control:** Git, GitHub  
 
