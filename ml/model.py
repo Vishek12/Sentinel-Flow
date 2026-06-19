@@ -1,88 +1,67 @@
-# This is the logic our model uses to make predictions
-
-import os
 import joblib
 import pandas as pd
-import io 
-import boto3 
+import io
+import boto3
 
-# BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-#
-# model_path = os.path.join(
-#     BASE_DIR,
-#     "artifacts",
-#     "sentinelflow_xgb.pkl"
-# )
-#
-# feature_columns_path = os.path.join(
-#     BASE_DIR,
-#     "artifacts",
-#     "feature_columns.pkl"
-# )
-
-#Retreive the model and features from our s3 bucket
 s3 = boto3.client("s3")
-
 BUCKET = "sentinelflow-models-123"
 
+_pipeline = None
 
-#load the files
 def load_from_s3(key):
-    buffer = io.ByteIO()
-    s3.download_fileobj(BUCKET, key, buffer)
+    buffer = io.BytesIO()
+
+    s3.download_fileobj(
+        BUCKET,
+        key,
+        buffer
+    )
+
+    buffer.seek(0)
     return joblib.load(buffer)
-    
-    
 
 
+def get_pipeline():
+    global _pipeline
+    if _pipeline is None:
+        _pipeline = load_from_s3("pipelines/sentinelflow_xgb_v1.pkl")
+    return _pipeline
 
-
-
-# Load model
-model = joblib.load(model_path)
-
-# Load the exact column order the model expects
-features = joblib.load(feature_columns_path)
-
-
+   
 def predict_fraud(input_data):
-  
-    # Convert input dict to DataFrame
-    raw_df = pd.DataFrame([input_data])
+    pipeline = get_pipeline()
+   
     
-    # Ensure columns match the exact training feature order
-    # Any missing columns default to 0/NaN; extra columns are dropped
-    final_features = raw_df.reindex(columns=features, fill_value=0)
+    raw_df = pd.DataFrame([input_data])
 
-    # Get fraud probability (probability of class 1)
-    prob = float(model.predict_proba(final_features)[0][1])
+    #Prevent any uninented casing 
+    raw_df.columns = [col.lower() for col in raw_df.columns]
 
-    # Your committed optimal threshold
-    threshold = 0.40
+    #Feed the raw data into the pipeline 
+    prob = float(pipeline.predict_proba(raw_df)[0][1])
+    
+    threshold = 0.50
     prediction = int(prob >= threshold)
 
-    # --- ADVANCED RISK & TRANSACTION LOGIC ---
     if prob >= 0.75:
         risk = "HIGH"
-        status = "BLOCK"  # Hard block, extremely likely to be fraud
-        
-    elif prob >= 0.40:
+        status = "BLOCK"
+    elif prob >= 0.50:
         risk = "MEDIUM-HIGH"
-        status = "FLAGGED"  # Crosses your 0.40 threshold, trigger investigation
-        
-    elif prob >= 0.20:
+        status = "FLAGGED"
+
+    elif prob >= 0.25:
         risk = "MEDIUM-LOW"
-        status = "REVIEW"  # Safe zone, but good candidate for step-up auth (SMS/OTP)
-        
+        status = "APPROVED-MONITORED"
     else:
         risk = "LOW"
-        status = "APPROVED"  # Safe to pass instantly
+        status = "APPROVED"
 
     return {
         "transaction_status": status,
         "fraud_probability": round(prob, 4),
         "is_fraud": prediction,
         "risk_level": risk,
-        "model_version": "1.1",
+        "model_version": "1.2 (Pipeline Optimized)",
         "threshold_used": threshold
     }

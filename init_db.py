@@ -1,5 +1,5 @@
-from db.database import Base, engine
-from db.models import Prediction
+from database.database import Base, engine
+from database.models import Prediction
 
 print("Creating tables...")
 

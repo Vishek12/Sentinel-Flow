@@ -2,13 +2,16 @@ from fastapi import FastAPI
 from pydantic import BaseModel
 from typing import List
 
-from ml.model import predict_fraud, features
-from db.database import SessionLocal
-from db.models import Prediction
+from ml.model import predict_fraud
+from database.database import SessionLocal
+from database.models import Prediction
 from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI(title="SentinelFlow API")
 
+# -------------------------
+# CORS
+# -------------------------
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -18,7 +21,7 @@ app.add_middleware(
 )
 
 # -------------------------
-# Global metrics (Updated to reflect your multi-tier risk strategy)
+# Metrics
 # -------------------------
 metrics = {
     "total_requests": 0,
@@ -30,9 +33,8 @@ metrics = {
     "low_risk": 0
 }
 
-
 # -------------------------
-# Request schema
+# Input Schema
 # -------------------------
 class Transaction(BaseModel):
     amount: float
@@ -54,25 +56,27 @@ class Transaction(BaseModel):
     distance_from_home_km: float
 
 
-# Helper function to centrally update global metrics
-def _update_metrics(result):
+# -------------------------
+# Metrics updater
+# -------------------------
+def update_metrics(result: dict):
     metrics["total_requests"] += 1
-    
+
     if result["is_fraud"] == 1:
         metrics["fraud_count"] += 1
     else:
         metrics["normal_count"] += 1
 
-    # Map the new model risk categories to tracking variables
-    risk_mapping = {
-        "HIGH": "high_risk",
-        "MEDIUM-HIGH": "medium_high_risk",
-        "MEDIUM-LOW": "medium_low_risk",
-        "LOW": "low_risk"
-    }
-    metric_key = risk_mapping.get(result["risk_level"])
-    if metric_key:
-        metrics[metric_key] += 1
+    risk = result["risk_level"]
+
+    if risk == "HIGH":
+        metrics["high_risk"] += 1
+    elif risk == "MEDIUM-HIGH":
+        metrics["medium_high_risk"] += 1
+    elif risk == "MEDIUM-LOW":
+        metrics["medium_low_risk"] += 1
+    else:
+        metrics["low_risk"] += 1
 
 
 # -------------------------
@@ -88,27 +92,30 @@ def home():
 # -------------------------
 @app.post("/predict")
 def predict(transaction: Transaction):
-    # Using model_dump() for Pydantic V2 compatibility
-    result = predict_fraud(transaction.model_dump())
-    
-    db = SessionLocal()
-    new_record = Prediction(
-        fraud_probability=result["fraud_probability"],
-        is_fraud=result["is_fraud"],
-        risk_level=result["risk_level"],
-        amount=transaction.amount
-    )
 
+    input_data = transaction.model_dump()
+    result = predict_fraud(input_data)
+
+    db = SessionLocal()
     try:
-        db.add(new_record)
+        record = Prediction(
+            fraud_probability=result["fraud_probability"],
+            is_fraud=result["is_fraud"],
+            risk_level=result["risk_level"],
+            amount=transaction.amount
+        )
+
+        db.add(record)
         db.commit()
+
     except Exception as e:
         db.rollback()
         raise e
+
     finally:
-        _update_metrics(result)
         db.close()
 
+    update_metrics(result)
     return result
 
 
@@ -117,28 +124,31 @@ def predict(transaction: Transaction):
 # -------------------------
 @app.post("/predict-batch")
 def predict_batch(transactions: List[Transaction]):
+
     results = []
     db = SessionLocal()
 
     try:
-        for trans in transactions:
-            result = predict_fraud(trans.model_dump())
+        for t in transactions:
+            input_data = t.model_dump()
+            result = predict_fraud(input_data)
+
             results.append(result)
+            update_metrics(result)
 
-            _update_metrics(result)
-
-            new_record = Prediction(
+            db.add(Prediction(
                 fraud_probability=result["fraud_probability"],
                 is_fraud=result["is_fraud"],
                 risk_level=result["risk_level"],
-                amount=trans.amount
-            )
-            db.add(new_record)
+                amount=t.amount
+            ))
 
         db.commit()
+
     except Exception as e:
         db.rollback()
         raise e
+
     finally:
         db.close()
 
@@ -149,17 +159,17 @@ def predict_batch(transactions: List[Transaction]):
 # Model info
 # -------------------------
 @app.get("/model-info")
-def get_model_info():
+def model_info():
     return {
-        "Model": "XGBoost",
-        "Task": "Fraud Detection",
-        "Threshold": 0.4,  # Updated to reflect your new model logic
-        "feature_count": len(features)
+        "model": "XGBoost",
+        "task": "Fraud Detection",
+        "feature_count": len(get_features),  # FIXED: assumes list, not function
+        "threshold": 0.5
     }
 
 
 # -------------------------
-# Metrics endpoint
+# Metrics
 # -------------------------
 @app.get("/metrics")
 def get_metrics():
@@ -167,11 +177,13 @@ def get_metrics():
 
 
 # -------------------------
-# History of the Database
+# History
 # -------------------------
 @app.get("/history")
-def get_history(limit: int = 50):
+def history(limit: int = 50):
+
     db = SessionLocal()
+
     try:
         records = (
             db.query(Prediction)
@@ -182,7 +194,7 @@ def get_history(limit: int = 50):
 
         return [
             {
-                "id": r.id, 
+                "id": r.id,
                 "timestamp": r.timestamp,
                 "fraud_probability": r.fraud_probability,
                 "is_fraud": r.is_fraud,
@@ -191,27 +203,33 @@ def get_history(limit: int = 50):
             }
             for r in records
         ]
-    finally: 
+
+    finally:
         db.close()
 
 
 # -------------------------
-# Fraud Rate 
+# Fraud rate
 # -------------------------
 @app.get("/fraud-rate")
 def fraud_rate():
+
     total = metrics["total_requests"]
-    if total == 0: 
+
+    if total == 0:
         return {"fraud_rate": 0}
-    
-    return {"fraud_rate": metrics["fraud_count"] / total}
+
+    return {
+        "fraud_rate": metrics["fraud_count"] / total
+    }
 
 
 # -------------------------
-# Risk Breakdown
+# Risk summary
 # -------------------------
 @app.get("/risk-summary")
 def risk_summary():
+
     return {
         "high_risk": metrics["high_risk"],
         "medium_high_risk": metrics["medium_high_risk"],
