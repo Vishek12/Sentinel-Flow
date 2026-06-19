@@ -1,0 +1,395 @@
+{
+  "info": {
+    "_postman_id": "147e8747-90f0-4335-98fc-0baf088d2f77",
+    "name": "SentinelFlow_Postman_Tests",
+    "description": "Integration testing suite for the SentinelFlow fraud detection API. Validates single-transaction scoring profiles (including legacy 17-feature enterprise schemas), high-volume batch scoring loops, and system telemetry endpoints tracking historical fraud risk distribution.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "29100923"
+  },
+  "item": [
+    {
+      "name": "T1_Fraud",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"amount\": 5000.00,\n  \"merchant\": \"Binance_Crypto_Exchange\",\n  \"merchant_category\": \"Crypto_Exchange\",\n  \"country\": \"CA\",\n  \"is_international\": true,\n  \"device_type\": \"Mobile\",\n  \"new_device\": true,\n  \"account_age_days\": 1,\n  \"transactions_last_hour\": 4,\n  \"total_spent_today\": 9500.00,\n  \"time_of_day\": \"Night\",\n  \"vpn_detected\": true,\n  \"email_verified\": true,\n  \"phone_verified\": false,\n  \"two_factor_enabled\": false,\n  \"failed_login_attempts\": 1,\n  \"distance_from_home_km\": 4200\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://localhost:8000/predict",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8000",
+          "path": [
+            "predict"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "T2_Fraud",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"amount\": 1200.00,\n  \"merchant\": \"Luxury_Watch_Boutique\",\n  \"merchant_category\": \"Retail\",\n  \"country\": \"FR\",\n  \"is_international\": true,\n  \"device_type\": \"Desktop\",\n  \"new_device\": true,\n  \"account_age_days\": 45,\n  \"transactions_last_hour\": 1,\n  \"total_spent_today\": 1200.00,\n  \"time_of_day\": \"11:45_PM\",\n  \"vpn_detected\": true,\n  \"email_verified\": false,\n  \"phone_verified\": false,\n  \"two_factor_enabled\": false,\n  \"failed_login_attempts\": 0,\n  \"distance_from_home_km\": 8432\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://localhost:8000/predict",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8000",
+          "path": [
+            "predict"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "T3_Fraud",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"amount\": 5000.00,\n  \"merchant\": \"Binance_Crypto_Exchange\",\n  \"merchant_category\": \"Finance\",\n  \"country\": \"KY\",\n  \"is_international\": true,\n  \"device_type\": \"Mobile_App\",\n  \"new_device\": true,\n  \"account_age_days\": 1,\n  \"transactions_last_hour\": 4,\n  \"total_spent_today\": 9500.00,\n  \"time_of_day\": \"02:10_AM\",\n  \"vpn_detected\": true,\n  \"email_verified\": true,\n  \"phone_verified\": false,\n  \"two_factor_enabled\": false,\n  \"failed_login_attempts\": 1,\n  \"distance_from_home_km\": 4200\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://localhost:8000/predict",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8000",
+          "path": [
+            "predict"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "T4_Fraud",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"amount\": 1.49,\n  \"merchant\": \"Steam_Games_Digital\",\n  \"merchant_category\": \"Entertainment\",\n  \"country\": \"US\",\n  \"is_international\": false,\n  \"device_type\": \"Desktop\",\n  \"new_device\": true,\n  \"account_age_days\": 310,\n  \"transactions_last_hour\": 14,\n  \"total_spent_today\": 21.36,\n  \"time_of_day\": \"04:02_AM\",\n  \"vpn_detected\": false,\n  \"email_verified\": true,\n  \"phone_verified\": true,\n  \"two_factor_enabled\": false,\n  \"failed_login_attempts\": 0,\n  \"distance_from_home_km\": 85\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://localhost:8000/predict",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8000",
+          "path": [
+            "predict"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "T5_Fruad",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"amount\": 1.49,\n  \"merchant\": \"Steam_Games_Digital\",\n  \"merchant_category\": \"Gaming_Digital\",\n  \"country\": \"US\",\n  \"is_international\": false,\n  \"device_type\": \"Mobile\",\n  \"new_device\": true,\n  \"account_age_days\": 310,\n  \"transactions_last_hour\": 14,\n  \"total_spent_today\": 21.36,\n  \"time_of_day\": \"Night\",\n  \"vpn_detected\": false,\n  \"email_verified\": true,\n  \"phone_verified\": true,\n  \"two_factor_enabled\": false,\n  \"failed_login_attempts\": 0,\n  \"distance_from_home_km\": 85\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://localhost:8000/predict",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8000",
+          "path": [
+            "predict"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "T6_Normal",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"amount\": 84.50,\n  \"merchant\": \"Kroger_Supermarket\",\n  \"merchant_category\": \"Groceries\",\n  \"country\": \"US\",\n  \"is_international\": false,\n  \"device_type\": \"iOS_Device\",\n  \"new_device\": false,\n  \"account_age_days\": 412,\n  \"transactions_last_hour\": 1,\n  \"total_spent_today\": 84.50,\n  \"time_of_day\": \"02:30_PM\",\n  \"vpn_detected\": false,\n  \"email_verified\": true,\n  \"phone_verified\": true,\n  \"two_factor_enabled\": true,\n  \"failed_login_attempts\": 0,\n  \"distance_from_home_km\": 4.2\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://localhost:8000/predict",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8000",
+          "path": [
+            "predict"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "T7_Normal",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"amount\": 45.00,\n  \"merchant\": \"Shell_Gas_Station\",\n  \"merchant_category\": \"Automotive\",\n  \"country\": \"US\",\n  \"is_international\": false,\n  \"device_type\": \"Mobile_App\",\n  \"new_device\": false,\n  \"account_age_days\": 850,\n  \"transactions_last_hour\": 0,\n  \"total_spent_today\": 45.00,\n  \"time_of_day\": \"07:15_AM\",\n  \"vpn_detected\": false,\n  \"email_verified\": true,\n  \"phone_verified\": true,\n  \"two_factor_enabled\": true,\n  \"failed_login_attempts\": 0,\n  \"distance_from_home_km\": 12.8\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://localhost:8000/predict",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8000",
+          "path": [
+            "predict"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "T8_Normal",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"amount\": 15.99,\n  \"merchant\": \"Spotify_Premium\",\n  \"merchant_category\": \"Entertainment_Tickets\",\n  \"country\": \"US\",\n  \"is_international\": false,\n  \"device_type\": \"Tablet\",\n  \"new_device\": false,\n  \"account_age_days\": 310,\n  \"transactions_last_hour\": 0,\n  \"total_spent_today\": 15.99,\n  \"time_of_day\": \"Night\",\n  \"vpn_detected\": false,\n  \"email_verified\": true,\n  \"phone_verified\": true,\n  \"two_factor_enabled\": true,\n  \"failed_login_attempts\": 0,\n  \"distance_from_home_km\": 0.0\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://localhost:8000/predict",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8000",
+          "path": [
+            "predict"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "T9_Normal",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"amount\": 15.99,\n  \"merchant\": \"Spotify_Premium\",\n  \"merchant_category\": \"Entertainment_Tickets\",\n  \"country\": \"US\",\n  \"is_international\": false,\n  \"device_type\": \"Tablet\",\n  \"new_device\": false,\n  \"account_age_days\": 310,\n  \"transactions_last_hour\": 0,\n  \"total_spent_today\": 15.99,\n  \"time_of_day\": \"Night\",\n  \"vpn_detected\": false,\n  \"email_verified\": true,\n  \"phone_verified\": true,\n  \"two_factor_enabled\": true,\n  \"failed_login_attempts\": 0,\n  \"distance_from_home_km\": 0.0\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://localhost:8000/predict",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8000",
+          "path": [
+            "predict"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "T10_Normal",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"amount\": 68.50,\n  \"merchant\": \"Olive_Garden\",\n  \"merchant_category\": \"Food_Dining\",\n  \"country\": \"US\",\n  \"is_international\": false,\n  \"device_type\": \"Mobile\",\n  \"new_device\": false,\n  \"account_age_days\": 180,\n  \"transactions_last_hour\": 2,\n  \"total_spent_today\": 92.10,\n  \"time_of_day\": \"Evening\",\n  \"vpn_detected\": false,\n  \"email_verified\": true,\n  \"phone_verified\": true,\n  \"two_factor_enabled\": false,\n  \"failed_login_attempts\": 0,\n  \"distance_from_home_km\": 14.7\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://localhost:8000/predict",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8000",
+          "path": [
+            "predict"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "T11_Batch_Test",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "[\n  {\n    \"amount\": 84.50,\n    \"merchant\": \"Kroger_Supermarket\",\n    \"merchant_category\": \"Groceries\",\n    \"country\": \"US\",\n    \"is_international\": false,\n    \"device_type\": \"iOS_Device\",\n    \"new_device\": false,\n    \"account_age_days\": 412,\n    \"transactions_last_hour\": 1,\n    \"total_spent_today\": 84.50,\n    \"time_of_day\": \"02:30_PM\",\n    \"vpn_detected\": false,\n    \"email_verified\": true,\n    \"phone_verified\": true,\n    \"two_factor_enabled\": true,\n    \"failed_login_attempts\": 0,\n    \"distance_from_home_km\": 4.2\n  },\n  {\n    \"amount\": 2499.00,\n    \"merchant\": \"Luxury_Watch_Boutique\",\n    \"merchant_category\": \"Electronics_Luxury\",\n    \"country\": \"FR\",\n    \"is_international\": true,\n    \"device_type\": \"Android_Device\",\n    \"new_device\": true,\n    \"account_age_days\": 2,\n    \"transactions_last_hour\": 5,\n    \"total_spent_today\": 4200.00,\n    \"time_of_day\": \"03:15_AM\",\n    \"vpn_detected\": true,\n    \"email_verified\": false,\n    \"phone_verified\": true,\n    \"two_factor_enabled\": false,\n    \"failed_login_attempts\": 4,\n    \"distance_from_home_km\": 6200.5\n  },\n  {\n    \"amount\": 12.30,\n    \"merchant\": \"Starbucks_Coffee\",\n    \"merchant_category\": \"Dining\",\n    \"country\": \"US\",\n    \"is_international\": false,\n    \"device_type\": \"Web_Browser\",\n    \"new_device\": false,\n    \"account_age_days\": 890,\n    \"transactions_last_hour\": 0,\n    \"total_spent_today\": 12.30,\n    \"time_of_day\": \"08:45_AM\",\n    \"vpn_detected\": false,\n    \"email_verified\": true,\n    \"phone_verified\": true,\n    \"two_factor_enabled\": true,\n    \"failed_login_attempts\": 0,\n    \"distance_from_home_km\": 1.1\n  }\n]",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://localhost:8000/predict-batch",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8000",
+          "path": [
+            "predict-batch"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "T12_getMetrics",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:8000/metrics",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8000",
+          "path": [
+            "metrics"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "T13_getHistoryLog",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:8000/history",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8000",
+          "path": [
+            "history"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "T14_getFraudRate",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:8000/fraud-rate",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8000",
+          "path": [
+            "fraud-rate"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "T15_getRiskSummary",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:8000/risk-summary",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8000",
+          "path": [
+            "risk-summary"
+          ]
+        }
+      },
+      "response": []
+    }
+  ]
+}
